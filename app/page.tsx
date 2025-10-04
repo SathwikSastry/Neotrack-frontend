@@ -1,7 +1,6 @@
 "use client"
 
 import { Hero } from "@/components/hero"
-import { OrbitSimulation } from "@/components/orbit-simulation"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
@@ -35,6 +34,8 @@ export default function HomePage() {
 
       <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
 
+      {/* OrbitSimulation component removed */}
+      {/* Previously:
       <section className="relative">
         <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
           <div
@@ -45,6 +46,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      */}
 
       <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
 
