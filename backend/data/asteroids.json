@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "label": "Apophis",
+    "r": 5.2,
+    "theta": 0.5,
+    "y": 0.02,
+    "size": 0.12,
+    "velocity_kms": 7.32,
+    "close_approach": false
+  },
+  {
+    "id": 2,
+    "label": "Bennu",
+    "r": 4.8,
+    "theta": 2.1,
+    "y": -0.03,
+    "size": 0.08,
+    "velocity_kms": 12.4,
+    "close_approach": false
+  },
+  {
+    "id": 3,
+    "label": "Didymoon",
+    "r": 6.0,
+    "theta": 4.0,
+    "y": 0.05,
+    "size": 0.16,
+    "velocity_kms": 9.1,
+    "close_approach": true
+  }
+]

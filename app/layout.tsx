@@ -34,6 +34,9 @@ export default function RootLayout({
           <SiteFooter />
           <Analytics />
         </Suspense>
+
+        {/* Client-side helper: set API base to backend when running locally */}
+        <script dangerouslySetInnerHTML={{ __html: "(function(){ if(typeof window!==\'undefined\' && !window.__NEOTRACK_API_BASE__){ window.__NEOTRACK_API_BASE__ = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:5000' : '' } })()" }} />
       </body>
     </html>
   )

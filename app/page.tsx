@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Contributors } from "@/components/contributors"
 import { useEffect, useState } from "react" // for modal/overlay control
+import { AIExplain } from "@/components/ai-explain"
 
 export default function HomePage() {
   const [showNasaViewer, setShowNasaViewer] = useState(false)
@@ -57,6 +58,7 @@ export default function HomePage() {
             >
               Open 3D Viewer
             </Button>
+            <AIExplain />
           </div>
         </div>
 

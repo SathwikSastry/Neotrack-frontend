@@ -62,22 +62,50 @@ export function OrbitSimulation() {
     )
     world.add(moonPath)
 
-    // Simple asteroid belt
+    // Asteroids: try fetching from backend, otherwise generate locally
     const beltRadius = 5.4
     const asteroidMat = new THREE.MeshPhongMaterial({ color: 0x9aa4b2 })
     const asteroids: NamedObject3D[] = []
-    for (let i = 0; i < 60; i++) {
-      const r = beltRadius + (Math.random() - 0.5) * 0.6
-      const theta = Math.random() * Math.PI * 2
-      const size = 0.06 + Math.random() * 0.12
+
+    const createAsteroid = (a: { r: number; theta: number; y?: number; size?: number; label?: string }) => {
+      const size = a.size ?? 0.08
       const geo = new THREE.DodecahedronGeometry(size)
       const mesh = new THREE.Mesh(geo, asteroidMat) as NamedObject3D
-      mesh.position.set(Math.cos(theta) * r, (Math.random() - 0.5) * 0.2, Math.sin(theta) * r)
+      mesh.position.set(Math.cos(a.theta) * a.r, a.y ?? (Math.random() - 0.5) * 0.2, Math.sin(a.theta) * a.r)
       mesh.rotation.set(Math.random(), Math.random(), Math.random())
-      mesh.userData.label = `Asteroid ${i + 1}`
+      mesh.userData.label = a.label ?? "Asteroid"
       world.add(mesh)
       asteroids.push(mesh)
     }
+
+    // Fetch asteroids from backend
+    fetch((window as any).__NEOTRACK_API_BASE__ ? `${(window as any).__NEOTRACK_API_BASE__}/api/asteroids` : "/api/asteroids")
+      .then((r) => r.json())
+      .then((json) => {
+        const data = json?.data ?? []
+        if (data.length > 0) {
+          data.forEach((a: any) => {
+            createAsteroid({ r: a.r ?? beltRadius, theta: a.theta ?? Math.random() * Math.PI * 2, y: a.y ?? 0, size: a.size ?? 0.08, label: a.label })
+          })
+        } else {
+          // fallback generate
+          for (let i = 0; i < 60; i++) {
+            const r = beltRadius + (Math.random() - 0.5) * 0.6
+            const theta = Math.random() * Math.PI * 2
+            const size = 0.06 + Math.random() * 0.12
+            createAsteroid({ r, theta, size, label: `Asteroid ${i + 1}` })
+          }
+        }
+      })
+      .catch(() => {
+        for (let i = 0; i < 60; i++) {
+          const r = beltRadius + (Math.random() - 0.5) * 0.6
+          const theta = Math.random() * Math.PI * 2
+          const size = 0.06 + Math.random() * 0.12
+          createAsteroid({ r, theta, size, label: `Asteroid ${i + 1}` })
+        }
+      })
+
 
     // Asteroid belt path line (visual hint)
     const belt = new THREE.LineLoop(
