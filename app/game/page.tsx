@@ -9,7 +9,7 @@ export default function GamePage() {
 
   // recommended hosted URL for the game; if you host the repo, update this to the hosted URL
   // Serve the embedded game's production files through a Next route at /game/static/index.html
-  const GAME_URL = process.env.NEXT_PUBLIC_GAME_URL || "/game/static/index.html"
+  const GAME_URL = process.env.NEXT_PUBLIC_GAME_URL || "/astro-neo-defense/index.html"
   // When serving locally the origin will be the site's origin.
   const GAME_ORIGIN = process.env.NEXT_PUBLIC_GAME_ORIGIN || (typeof window !== 'undefined' ? window.location.origin : '')
 
