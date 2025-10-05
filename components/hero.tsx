@@ -3,12 +3,29 @@
 import type React from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { useRef } from "react"
-import EarthHero from "@/components/earth-hero"
+import { useRef, useEffect, useState } from "react"
 
 export function Hero() {
   const reduce = useReducedMotion()
   const containerRef = useRef<HTMLDivElement>(null)
+  const earthRef = useRef<HTMLDivElement>(null)
+  const [earthVisible, setEarthVisible] = useState(false)
+
+  useEffect(() => {
+    const node = earthRef.current
+    if (!node) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setEarthVisible(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: "120px", threshold: 0.1 },
+    )
+    io.observe(node)
+    return () => io.disconnect()
+  }, [])
 
   const onBegin = () => {
     const el = document.getElementById("nasa-model")
@@ -68,27 +85,29 @@ export function Hero() {
       />
 
       {/* Organize Hero content into a responsive grid with the Earth on the right */}
-      <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-4 pb-10 pt-14 md:grid-cols-2 md:px-6 md:pt-20">
-        {/* Decorative: internal laser beam so effect is always visible and does not block interactions */}
+      <div
+        className="relative z-20 mx-auto grid max-w-6xl grid-cols-1 items-center gap-8 px-4 pb-10 pt-14 md:grid-cols-2 md:gap-10 md:px-6 md:pt-20 isolate"
+        style={{ contentVisibility: "auto", contain: "layout paint" } as React.CSSProperties}
+      >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-40 w-[92%] rounded-[28px] opacity-70 blur-md md:h-48"
+          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-44 w-[92%] rounded-[28px] opacity-90 blur-[6px] md:h-52"
           style={{
             background:
-              "radial-gradient(60% 120% at 50% 0%, rgba(255,140,0,0.25) 0%, rgba(0,191,255,0.20) 30%, rgba(0,0,0,0) 70%)",
-            maskImage: "linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.3), rgba(0,0,0,0))",
+              "radial-gradient(55% 120% at 50% 0%, rgba(255,140,0,0.35) 0%, rgba(0,191,255,0.28) 30%, rgba(0,0,0,0) 70%)",
+            maskImage: "linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0.45) 55%, rgba(0,0,0,0) 90%)",
           }}
         />
 
         {/* Left: Title + copy + CTA */}
-        <div className="relative z-20 flex flex-col items-center md:items-start will-change-transform">
+        <div className="relative z-30 flex flex-col items-center md:items-start will-change-transform">
           <motion.h1
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={reduce ? {} : { opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="text-pretty text-center font-[var(--font-display)] text-4xl leading-tight tracking-wide md:text-6xl"
             style={{
-              textShadow: "0 0 10px rgba(255,140,0,0.35), 0 0 18px rgba(0,191,255,0.25)",
+              textShadow: "0 0 10px rgba(255,140,0,0.45), 0 0 24px rgba(0,191,255,0.35), 0 1px 2px rgba(0,0,0,0.6)",
               color: "var(--color-foreground)",
             }}
           >
@@ -132,30 +151,50 @@ export function Hero() {
         </div>
 
         {/* Right: Revolving Earth (decorative 3D visual) */}
-        <div className="relative mx-auto w-full max-w-[560px] will-change-transform">
-          {/* Rim light behind the sphere to improve contrast */}
+        <div
+          ref={earthRef}
+          className="relative mx-auto w-full max-w-[560px] md:max-w-[620px]"
+          style={{ contain: "layout paint", contentVisibility: "auto" } as React.CSSProperties}
+        >
+          {/* Decorative rim light behind the embed for separation */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-x-6 -inset-y-4 rounded-full opacity-50 blur-2xl"
+            className="pointer-events-none absolute -inset-x-8 -inset-y-6 rounded-full opacity-60 blur-2xl"
             style={{
               background:
-                "radial-gradient(60% 60% at 60% 40%, rgba(0,191,255,0.22) 0%, rgba(255,140,0,0.18) 30%, rgba(0,0,0,0) 70%)",
+                "radial-gradient(60% 60% at 60% 40%, rgba(0,191,255,0.28) 0%, rgba(255,140,0,0.22) 28%, rgba(0,0,0,0) 70%)",
             }}
           />
-          {/* Fixed-height aspect for perf and predictable layout (prevents reflow) */}
-          <div className="relative h-[300px] w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.02)] md:h-[420px] lg:h-[520px]">
-            {/* Mask the canvas edges for a cleaner look */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0"
-              style={{
-                boxShadow: "inset 0 0 40px rgba(0,0,0,0.55), inset 0 0 120px rgba(0,0,0,0.55)",
-                maskImage: "radial-gradient(120% 120% at 50% 50%, black 60%, transparent 100%)",
-              }}
-            />
-            {/* 3D Earth */}
-            <span className="sr-only">Revolving Earth 3D visualization</span>
-            <EarthHero />
+
+          <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.02)]">
+            <span className="sr-only">Interactive 3D model of Earth embedded from Sketchfab</span>
+
+            {earthVisible ? (
+              <iframe
+                title="Earth"
+                src="https://sketchfab.com/models/41fc80d85dfd480281f21b74b2de2faa/embed"
+                allow="autoplay; fullscreen; xr-spatial-tracking"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="h-full w-full"
+                style={{
+                  border: "0",
+                  borderRadius: "16px",
+                  willChange: "transform",
+                  transform: "translateZ(0)",
+                }}
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                className="h-full w-full animate-pulse"
+                style={{
+                  background:
+                    "radial-gradient(60% 60% at 55% 45%, rgba(0,191,255,0.10), rgba(255,140,0,0.06) 35%, rgba(0,0,0,0) 70%)",
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
