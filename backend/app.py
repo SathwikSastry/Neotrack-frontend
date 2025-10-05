@@ -7,6 +7,29 @@ import json
 app = Flask(__name__)
 CORS(app)
 
+# Trusted origin for the embedded game. Set in the environment in production to the exact origin
+# of the hosted game (e.g. https://sameersj008.github.io). This is used to build a restrictive
+# Content-Security-Policy and to validate postMessage targets when proxying/handling messages.
+GAME_ORIGIN = os.environ.get("GAME_ORIGIN", "https://sameersj008.github.io")
+
+
+@app.after_request
+def set_security_headers(response):
+    # Build a conservative Content-Security-Policy. Adjust `connect-src`/others as needed for
+    # additional external APIs used by the backend or frontend.
+    csp_parts = [
+        "default-src 'self'",
+        f"frame-src 'self' {GAME_ORIGIN}",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https:",
+        "connect-src 'self' https://api.groq.ai https://api.nasa.gov",
+    ]
+    response.headers.setdefault('Content-Security-Policy', "; ".join(csp_parts))
+    response.headers.setdefault('X-Content-Type-Options', 'nosniff')
+    response.headers.setdefault('Referrer-Policy', 'no-referrer')
+    return response
+
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 ASTEROIDS_FILE = os.path.join(DATA_DIR, "asteroids.json")
 
