@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Contributors } from "@/components/contributors"
 import { useEffect, useState } from "react" // for modal/overlay control
 import { AIExplain } from "@/components/ai-explain"
+import { LearnScience } from "@/components/learn-science"
 
 export default function HomePage() {
   const [showNasaViewer, setShowNasaViewer] = useState(false)
@@ -27,6 +28,11 @@ export default function HomePage() {
       <section className="relative">
         <Hero />
       </section>
+      <div aria-hidden="true" className="h-12 md:h-16" />
+
+      {/* Learn the science section inserted after NASA Eyes */}
+      <LearnScience />
+
 
       <div aria-hidden="true" className="h-6 md:h-8 lg:h-12" />
 
@@ -61,6 +67,11 @@ export default function HomePage() {
             <AIExplain />
           </div>
         </div>
+
+      <div aria-hidden="true" className="h-12 md:h-16" />
+
+      {/* Learn the science section inserted after Impact Assessment */}
+      <LearnScience />
 
         {showNasaViewer ? (
           <div
