@@ -19,13 +19,15 @@ export default function ImpactZonePage() {
   const [shareText, setShareText] = useState<string>("")
   const [computed, setComputed] = useState<any | null>(null)
   const [listLoading, setListLoading] = useState(true)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  // dropdownOpen removed - we'll use a standard select for reliability
 
   useEffect(() => {
     const base = (window as any).__NEOTRACK_API_BASE__ || ""
     setListLoading(true)
     fetch(`${base}/api/asteroids`).then((r) => r.json()).then((j) => {
       setAsteroids(j?.list || [])
+      setSelected(null)
+      setSelectedAsteroid(null)
       setListLoading(false)
     }).catch(() => setListLoading(false))
   }, [])
@@ -87,16 +89,21 @@ export default function ImpactZonePage() {
                 <option>Loading...</option>
               </select>
             ) : (
-              <select aria-label="Select Asteroid" value={selected ?? ""} onChange={(e) => {
-                const v = e.target.value || null
-                setSelected(v)
-                const found = asteroids.find((a: any) => (a.name || a.label) === v) || null
-                setSelectedAsteroid(found)
-              }} className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.04)] text-white" style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.12)" }}
-              onFocus={() => setDropdownOpen(true)} onBlur={() => setDropdownOpen(false)} size={dropdownOpen ? Math.min(asteroids.length, 20) : 1}>
+              <select
+                aria-label="Select Asteroid"
+                value={selected ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value || null
+                  setSelected(v)
+                  const found = asteroids.find((a: any) => String(a.id) === String(v)) || null
+                  setSelectedAsteroid(found)
+                }}
+                className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.04)] text-white"
+                style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.12)" }}
+              >
                 <option value="">-- Select asteroid --</option>
                 {asteroids.map((a: any) => (
-                  <option key={(a.name || a.label) + String(a.id || a.label)} value={(a.name || a.label)}>{a.name || a.label}</option>
+                  <option key={String(a.id)} value={String(a.id)}>{a.name || a.label || `Asteroid ${a.id}`}</option>
                 ))}
               </select>
             )}
@@ -116,10 +123,10 @@ export default function ImpactZonePage() {
           {selectedAsteroid ? (
             <div className="rounded-xl p-4" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(6px)' }}>
               <h4 className="font-semibold text-[var(--color-accent)]">Asteroid Info</h4>
-              <p className="mt-2 text-sm">Name: <strong>{selectedAsteroid.name || selectedAsteroid.label}</strong></p>
-              <p className="mt-1 text-sm">Estimated diameter: <strong>{selectedAsteroid.diameter ? Number(selectedAsteroid.diameter).toLocaleString() + ' m' : (selectedAsteroid.size ? String(selectedAsteroid.size) : '—')}</strong></p>
-              <p className="mt-1 text-sm">Estimated mass: <strong>{selectedAsteroid.mass ? Number(selectedAsteroid.mass).toExponential(2) + ' kg' : '—'}</strong></p>
-              <p className="mt-1 text-sm">Velocity: <strong>{selectedAsteroid.velocity ? selectedAsteroid.velocity + ' km/s' : (selectedAsteroid.velocity_kms ? selectedAsteroid.velocity_kms + ' km/s' : '—')}</strong></p>
+              <p className="mt-2 text-sm">Name: <strong>{selectedAsteroid.name || selectedAsteroid.label || `Asteroid ${selectedAsteroid.id || '—'}`}</strong></p>
+              <p className="mt-1 text-sm">Estimated diameter: <strong>{(selectedAsteroid.diameter !== undefined && selectedAsteroid.diameter !== null) ? (Number(selectedAsteroid.diameter).toLocaleString() + ' m') : ((selectedAsteroid.size !== undefined && selectedAsteroid.size !== null) ? String(selectedAsteroid.size) : '—')}</strong></p>
+              <p className="mt-1 text-sm">Estimated mass: <strong>{(selectedAsteroid.mass !== undefined && selectedAsteroid.mass !== null) ? (Number(selectedAsteroid.mass).toExponential(2) + ' kg') : '—'}</strong></p>
+              <p className="mt-1 text-sm">Velocity: <strong>{(selectedAsteroid.velocity !== undefined && selectedAsteroid.velocity !== null) ? (selectedAsteroid.velocity + ' km/s') : ((selectedAsteroid.velocity_kms !== undefined && selectedAsteroid.velocity_kms !== null) ? (selectedAsteroid.velocity_kms + ' km/s') : '—')}</strong></p>
               <p className="mt-1 text-sm">Close approach: <strong>{selectedAsteroid.close_approach ? 'Yes' : 'No'}</strong></p>
             </div>
           ) : (
