@@ -34,7 +34,7 @@ const members: Member[] = [
     glowColor: "#32CD32",
   },
   {
-    name: "Prahlad N K",
+    name: "Prahlad Kulkarni",
     role: "Designer and researcher",
     avatar: "/placeholder-user.jpg",
     github: "https://github.com/PrahladNK",
