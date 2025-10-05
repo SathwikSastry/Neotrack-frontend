@@ -61,6 +61,11 @@ export default function GamePage() {
               allowFullScreen
               style={{ width: '100%', height: '100%', border: 'none', borderRadius: 16, background: 'transparent' }}
               onLoad={() => setLoaded(true)}
+              onError={() => {
+                // If iframe fails to load, show a console hint; the server route may be misconfigured or assets missing.
+                console.error('Failed to load embedded game at', GAME_URL)
+                setLoaded(false)
+              }}
             />
           </div>
         </div>

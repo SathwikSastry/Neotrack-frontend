@@ -37,10 +37,20 @@ export async function GET(req: Request, { params }: { params: { path?: string[] 
 
     // normalize and prevent directory traversal
     const safeRel = path.normalize(rel).replace(/^([\\\/]+)|([\\\/]*\.\.([\\\/]|$))/g, '')
-    const filePath = path.join(DIST, safeRel)
+    const abs = path.resolve(DIST, safeRel)
 
-    if (!filePath.startsWith(DIST)) return new NextResponse('Not found', { status: 404 })
-    if (!fs.existsSync(filePath)) return new NextResponse('Not found', { status: 404 })
+    // ensure the resolved path is inside DIST
+    const relToDist = path.relative(DIST, abs)
+    if (relToDist.startsWith('..') || path.isAbsolute(relToDist) && relToDist.indexOf('..') === 0) {
+      return new NextResponse('Not found', { status: 404 })
+    }
+
+    let filePath = abs
+    if (!fs.existsSync(filePath)) {
+      // fallback: serve index.html for SPA routes
+      filePath = path.join(DIST, 'index.html')
+      if (!fs.existsSync(filePath)) return new NextResponse('Not found', { status: 404 })
+    }
 
     const data = await fs.promises.readFile(filePath)
     const ct = contentTypeFromFile(filePath)
