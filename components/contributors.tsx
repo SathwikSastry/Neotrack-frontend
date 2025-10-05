@@ -28,7 +28,7 @@ const members: Member[] = [
   },
   {
     name: "Sameer S J",
-    role: "Game Developer",
+    role: "Game Developer and designer",
     avatar: "/placeholder-user.jpg",
     github: "https://github.com/sameersj008",
     glowColor: "#32CD32",

@@ -9,7 +9,6 @@ import { MetricCards } from "@/components/impact/metric-cards"
 
 export default function ImpactZonePage() {
   // remove custom numeric inputs — user will pick from the curated asteroid list
-  const [target, setTarget] = useState("ground")
   const [loading, setLoading] = useState(false)
   const [detail, setDetail] = useState<any>(null)
   const [asteroids, setAsteroids] = useState<Array<any>>([])
@@ -31,8 +30,10 @@ export default function ImpactZonePage() {
     setLoading(true)
     setDetail(null)
     try {
+      // simulate fetching & formatting delay (3-4s) to show the banner
+      await new Promise((res) => setTimeout(res, 3400))
       const base = (window as any).__NEOTRACK_API_BASE__ || ""
-      const body: any = { target }
+      const body: any = {}
       if (selected) body.asteroid_name = selected
       const res = await fetch(`${base}/api/impact-details`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       const j = await res.json()
@@ -57,7 +58,7 @@ export default function ImpactZonePage() {
         </div>
       ) : null}
 
-      <form onSubmit={submit} className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <form onSubmit={submit} className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-3">
           <label className="flex flex-col">
             <span className="text-sm text-[var(--color-muted-foreground)]">Select Asteroid</span>
@@ -73,7 +74,7 @@ export default function ImpactZonePage() {
                 setSelectedAsteroid(found)
               }} className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.05)] text-white" style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.2)" }}>
                 <option value="">-- Select asteroid --</option>
-                {asteroids.slice(0, 20).map((a: any) => (
+                {asteroids.map((a: any) => (
                   <option key={a.name} value={a.name}>{a.name}</option>
                 ))}
               </select>
@@ -81,17 +82,8 @@ export default function ImpactZonePage() {
           </label>
         </div>
         {/* numeric inputs removed — selection from curated list only */}
-  <div className="md:col-span-3 flex items-center gap-3">
-          <label className="inline-flex items-center gap-2">
-            <input type="radio" name="target" checked={target === "ground"} onChange={() => setTarget("ground")} /> Ground
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input type="radio" name="target" checked={target === "air"} onChange={() => setTarget("air")} /> Airburst
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input type="radio" name="target" checked={target === "water"} onChange={() => setTarget("water")} /> Water
-          </label>
-
+        <div className="md:col-span-3 flex items-center gap-3">
+          <div className="text-sm text-[var(--color-muted-foreground)]">Choose an asteroid and press Calculate Impact</div>
           <button aria-label="Calculate Impact" className="ml-auto px-4 py-2 rounded bg-[var(--color-primary)] text-black shadow-[0_0_20px_rgba(255,140,0,0.5)]" disabled={loading || !selected}>
             {loading ? "Fetching the data from the sources" : "Calculate Impact"}
           </button>
@@ -108,6 +100,8 @@ export default function ImpactZonePage() {
               <p className="mt-1 text-sm">Estimated mass: <strong>{selectedAsteroid.mass ? Number(selectedAsteroid.mass).toExponential(2) + ' kg' : '—'}</strong></p>
               <p className="mt-1 text-sm">Velocity: <strong>{selectedAsteroid.velocity ? selectedAsteroid.velocity + ' km/s' : '—'}</strong></p>
               <p className="mt-1 text-sm">Close approach: <strong>{selectedAsteroid.close_approach ? 'Yes' : 'No'}</strong></p>
+              <p className="mt-1 text-sm">Diameter (raw): <strong>{selectedAsteroid.diameter}</strong></p>
+              <p className="mt-1 text-sm">Raw payload: <small className="text-xs">{JSON.stringify(selectedAsteroid)}</small></p>
             </div>
           ) : (
             <div className="rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.02)] p-4">
@@ -137,6 +131,14 @@ export default function ImpactZonePage() {
               <h4 className="font-semibold">Blast & Seismic</h4>
               <p className="mt-2 text-sm font-mono">{detail ? `Blast radius ~ ${Number(detail.blast_radius_km).toFixed(2)} km` : "—"}</p>
                 <p className="mt-2 text-sm font-mono">{detail ? `Estimated Mw ${Number(detail.seismic_magnitude_mw).toFixed(2)}` : "—"}</p>
+              <div className="mt-3">
+                <h5 className="font-semibold">Detailed result</h5>
+                {detail ? (
+                  <pre className="mt-2 text-xs font-mono bg-black/10 p-2 rounded max-h-40 overflow-auto">{JSON.stringify(detail, null, 2)}</pre>
+                ) : (
+                  <div className="mt-2 text-sm text-[var(--color-muted-foreground)]">Run a calculation to see detailed values</div>
+                )}
+              </div>
             </div>
           </div>
         </div>
