@@ -19,6 +19,12 @@ export function ImpactSummaryCard({ data }: { data: any }) {
   }
 
   if (!data) return null
+
+  const safe = (v: any, digits = 2) => {
+    const n = Number(v)
+    if (!isFinite(n)) return '—'
+    return n.toFixed(digits)
+  }
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.02)] p-4">
       <h3 className="font-semibold">Impact Summary</h3>
