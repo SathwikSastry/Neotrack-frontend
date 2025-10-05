@@ -21,17 +21,7 @@ export function SiteFooter() {
         <p id="site-footer" className="font-[var(--font-display)] text-lg">
           Built with NASA Open Data and AI
         </p>
-        <p className="mt-1">
-          Open Source Project —{" "}
-          <Link
-            href="https://github.com/SathwikSastry/Neotrack-frontend"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline decoration-[var(--color-accent)] underline-offset-4"
-          >
-            View on GitHub
-          </Link>
-        </p>
+        <p className="mt-1">Open Source Project</p>
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
           <Badge
             className="px-3 py-1"
