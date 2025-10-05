@@ -1,6 +1,7 @@
 "use client"
 
 import { Hero } from "@/components/hero"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Contributors } from "@/components/contributors"
@@ -168,7 +169,7 @@ export default function HomePage() {
             aria-label="Navigate to the space game"
           >
             <div className="grid items-center gap-4 md:grid-cols-[320px_1fr]">
-              <img src="/placeholder.svg?height=200&width=320" alt="Space game preview" className="rounded-md" />
+              <Image src="/placeholder.jpg" alt="Space game preview" width={320} height={200} className="rounded-md" />
               <div className="flex flex-col gap-3">
                 <p className="text-sm text-[var(--color-muted-foreground)]">
                   Hover for glow. The full game loads on the dedicated page.
