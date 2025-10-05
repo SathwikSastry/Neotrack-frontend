@@ -6,6 +6,7 @@ import "./globals.css"
 import { Orbitron } from "next/font/google"
 import { Suspense } from "react"
 import { SiteFooter } from "@/components/site-footer"
+import { CursorGlow } from "@/components/cursor-glow"
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="en" className="antialiased">
       <body className={`font-sans ${GeistSans.variable} ${orbitron.variable}`}>
         <Suspense fallback={<div>Loading...</div>}>
+          <CursorGlow /> {/* site-wide lighting cursor */}
           {children}
           <SiteFooter />
           <Analytics />

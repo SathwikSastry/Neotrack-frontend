@@ -2,29 +2,24 @@
 
 import { Hero } from "@/components/hero"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
-import { useState } from "react"
-import { motion } from "framer-motion"
 import { Contributors } from "@/components/contributors"
+import { useEffect, useState } from "react" // for modal/overlay control
 
 export default function HomePage() {
-  const [asteroid, setAsteroid] = useState<string>("Apophis")
-  const [computed, setComputed] = useState<null | {
-    velocity_kms: number
-    impact_energy_mt: number
-    crater_diameter_km: number
-    impact_probability: number
-  }>(null)
+  const [showNasaViewer, setShowNasaViewer] = useState(false)
 
-  const handleCompute = () => {
-    setComputed({
-      velocity_kms: asteroid === "Bennu" ? 12.6 : 19.3,
-      impact_energy_mt: asteroid === "Bennu" ? 1200 : 3400,
-      crater_diameter_km: asteroid === "Bennu" ? 1.2 : 2.1,
-      impact_probability: asteroid === "Bennu" ? 0.002 : 0.001,
-    })
-  }
+  useEffect(() => {
+    const prev = document.documentElement.style.overflow
+    if (showNasaViewer) {
+      document.documentElement.style.overflow = "hidden"
+    } else {
+      document.documentElement.style.overflow = prev || ""
+    }
+    return () => {
+      document.documentElement.style.overflow = prev || ""
+    }
+  }, [showNasaViewer])
 
   return (
     <main className="min-h-dvh flex flex-col">
@@ -32,24 +27,9 @@ export default function HomePage() {
         <Hero />
       </section>
 
-      <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
+      <div aria-hidden="true" className="h-6 md:h-8 lg:h-12" />
 
-      {/* OrbitSimulation component removed */}
-      {/* Previously:
-      <section className="relative">
-        <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
-          <div
-            className="rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] backdrop-blur-md"
-            aria-label="Interactive orbit simulation"
-          >
-            <OrbitSimulation />
-          </div>
-        </div>
-      </section>
-      */}
-
-      <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
-
+      {/* NASA Eyes Section */}
       <section className="relative" id="nasa-model" aria-labelledby="nasa-eyes-title">
         <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
           <h2
@@ -58,26 +38,74 @@ export default function HomePage() {
           >
             Explore the Solar System in Real Time
           </h2>
-          <p className="mt-2 text-[var(--color-muted-foreground)]">Powered by NASA Eyes</p>
-          <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] p-2 backdrop-blur-md">
-            <iframe
-              title="NASA Eyes — Asteroids"
-              src="https://eyes.nasa.gov/apps/asteroids/#/"
+          <p className="mt-2 text-[var(--color-muted-foreground)]">
+            Powered by NASA Eyes. Click the button below to open the full 3D viewer right on this page.
+          </p>
+
+          <div className="mt-6">
+            <Button
+              onClick={() => setShowNasaViewer(true)}
+              aria-label="Open NASA Eyes 3D viewer in a fullscreen overlay"
               style={{
-                width: "100%",
-                height: "600px",
-                border: "2px solid rgba(255,255,255,0.2)",
+                background: "linear-gradient(90deg, #FF8C00, #00BFFF)",
+                color: "#FFFFFF",
+                fontWeight: 700,
+                padding: "14px 24px",
                 borderRadius: "12px",
-                boxShadow: "0 0 30px rgba(0,191,255,0.5)",
+                boxShadow: "0 0 18px rgba(0,191,255,0.35)",
               }}
-            />
-            <p className="sr-only">Visualization provided by NASA Eyes</p>
+            >
+              Open 3D Viewer
+            </Button>
           </div>
         </div>
+
+        {showNasaViewer ? (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="NASA Eyes 3D Viewer"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
+          >
+            {/* Close button */}
+            <div className="absolute right-4 top-4 z-[51]">
+              <Button
+                onClick={() => setShowNasaViewer(false)}
+                variant="secondary"
+                aria-label="Close NASA Eyes 3D viewer"
+                style={{
+                  background: "linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.14))",
+                  color: "var(--color-foreground)",
+                  borderRadius: "12px",
+                  boxShadow: "0 0 24px rgba(0,191,255,0.25)",
+                  border: "1px solid var(--color-border)",
+                }}
+              >
+                Close ✕
+              </Button>
+            </div>
+
+            {/* Iframe wrapper */}
+            <div className="absolute inset-0 p-2 md:p-4 lg:p-6">
+              <div className="h-full w-full overflow-hidden rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] shadow-[0_0_40px_rgba(0,191,255,0.25)]">
+                <iframe
+                  title="NASA Eyes — Fullscreen"
+                  src="https://eyes.nasa.gov/apps/asteroids/#/"
+                  className="h-full w-full"
+                  style={{
+                    border: "none",
+                  }}
+                />
+                <p className="sr-only">Visualization provided by NASA Eyes</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </section>
 
-      <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
+      <div aria-hidden="true" className="h-20 md:h-24 lg:h-28" />
 
+      {/* Impact Assessment — just a heading + button to the full-screen page */}
       <section className="relative" aria-labelledby="impact-assessment">
         <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
           <h2
@@ -86,88 +114,31 @@ export default function HomePage() {
           >
             Impact Assessment Dashboard
           </h2>
-          <p className="mt-2 text-[var(--color-muted-foreground)]">Physics meets AI</p>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-[260px_1fr]">
-            <div className="rounded-lg border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] p-4 backdrop-blur-md">
-              <label className="text-sm text-[var(--color-muted-foreground)]">Select Asteroid</label>
-              <div className="mt-2">
-                <Select value={asteroid} onValueChange={setAsteroid}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select asteroid" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Apophis">Apophis</SelectItem>
-                    <SelectItem value="Bennu">Bennu</SelectItem>
-                    <SelectItem value="Psyche">Psyche</SelectItem>
-                    <SelectItem value="Eros">Eros</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button
-                onClick={handleCompute}
-                className="mt-4"
-                style={{
-                  background: "linear-gradient(90deg, #FF8C00, #00BFFF)",
-                  color: "#FFFFFF",
-                  fontWeight: 700,
-                }}
-              >
-                Compute Impact Simulation
-              </Button>
-              <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
-                Future: calls backend /api/impact-analysis to compute physics.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] p-4 backdrop-blur-md">
-              {!computed ? (
-                <div className="grid place-items-center gap-3 py-10 text-center">
-                  <img src="/placeholder.svg?height=200&width=400" alt="Placeholder chart" className="rounded-md" />
-                  <p className="text-sm text-[var(--color-muted-foreground)]">
-                    Visualized results of kinetic energy, crater size, and impact probability.
-                  </p>
-                </div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="grid gap-4 md:grid-cols-2"
-                >
-                  <div>
-                    <img
-                      src="/placeholder.svg?height=220&width=420"
-                      alt="Computed chart preview"
-                      className="rounded-md"
-                    />
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2">
-                      <span className="text-[var(--color-muted-foreground)]">Velocity</span>
-                      <span className="font-medium">{computed.velocity_kms.toFixed(1)} km/s</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2">
-                      <span className="text-[var(--color-muted-foreground)]">Impact Energy</span>
-                      <span className="font-medium">{computed.impact_energy_mt.toLocaleString()} Mt</span>
-                    </div>
-                    <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-2">
-                      <span className="text-[var(--color-muted-foreground)]">Crater Diameter</span>
-                      <span className="font-medium">{computed.crater_diameter_km.toFixed(1)} km</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[var(--color-muted-foreground)]">Impact Probability</span>
-                      <span className="font-medium">{(computed.impact_probability * 100).toFixed(2)}%</span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </div>
-          </div>
+          <p className="mt-2 text-[var(--color-muted-foreground)]">
+            Open the full-screen dashboard to analyze kinetic energy, crater size, and probabilities.
+          </p>
+          <Link
+            href="/impact-zone"
+            className="mt-6 inline-flex"
+            aria-label="Open full-screen Impact Assessment Dashboard"
+          >
+            <Button
+              style={{
+                background: "linear-gradient(90deg, #FF8C00, #00BFFF)",
+                color: "#FFFFFF",
+                fontWeight: 700,
+                padding: "14px 24px",
+                borderRadius: "12px",
+                boxShadow: "0 0 18px rgba(0,191,255,0.35)",
+              }}
+            >
+              Open Full Screen Dashboard
+            </Button>
+          </Link>
         </div>
       </section>
 
-      <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
+      <div aria-hidden="true" className="h-24 md:h-32 lg:h-36" />
 
       <section className="relative" aria-labelledby="space-game">
         <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
@@ -210,7 +181,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div aria-hidden="true" className="h-24 md:h-40 lg:h-48" />
+      <div aria-hidden="true" className="h-24 md:h-32 lg:h-36" />
 
       <section className="relative" aria-labelledby="contributors">
         <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
