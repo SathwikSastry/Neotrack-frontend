@@ -76,7 +76,28 @@ def api_asteroids():
     """
     try:
         data = load_asteroids()
-        return jsonify({"status": "ok", "data": data})
+        # Provide a simplified list for dropdowns (name, mass, velocity, diameter)
+        simplified = []
+        for n in data:
+            name = n.get("label") or n.get("name") or str(n.get("id"))
+            # diameter_m: if size exists, interpret as approximate meters; else try estimated_diameter
+            diameter_m = n.get("diameter_m") or n.get("size") or None
+            # if our 'size' is a small fraction, assume it's meters already; otherwise default
+            if diameter_m and diameter_m < 1:  # if <1 assume it's in km fraction, scale up
+                diameter_m = diameter_m * 100
+            # velocity
+            velocity = n.get("velocity_kms") or n.get("velocity") or None
+            # mass estimate from diameter and default density
+            mass = None
+            try:
+                if diameter_m:
+                    rho = 3000.0
+                    r = float(diameter_m) / 2.0
+                    mass = (4.0 / 3.0) * math.pi * (r ** 3) * rho
+            except Exception:
+                mass = None
+            simplified.append({"name": name, "mass": mass, "velocity": velocity, "diameter": diameter_m})
+        return jsonify({"status": "ok", "data": data, "list": simplified})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
@@ -132,13 +153,43 @@ def api_impact_details():
     """
     payload = request.get_json() or {}
     try:
-        v_kms = float(payload.get("velocity_kms", 20.0))
-        mass_kg = float(payload.get("mass_kg", 1e9))
-        diameter_m = float(payload.get("diameter_m", 100.0))
+        # If asteroid_name provided, attempt to pull values from load_asteroids()
+        asteroid_name = payload.get("asteroid_name")
+        v_kms = payload.get("velocity_kms")
+        mass_kg = payload.get("mass_kg")
+        diameter_m = payload.get("diameter_m")
         density = float(payload.get("density_kg_m3", 3000))
         target = payload.get("target", "ground")
+
+        if asteroid_name and (not v_kms or not mass_kg or not diameter_m):
+            asts = load_asteroids()
+            found = None
+            for a in asts:
+                if str(a.get("label", "")).lower() == str(asteroid_name).lower() or str(a.get("name", "")).lower() == str(asteroid_name).lower():
+                    found = a
+                    break
+            if found:
+                v_kms = v_kms or found.get("velocity_kms") or found.get("velocity") or 20.0
+                diameter_m = diameter_m or found.get("diameter_m") or found.get("size") or None
+                # mass: try to use provided mass, else estimate from diameter
+                if not mass_kg:
+                    if diameter_m:
+                        # assume diameter_m in meters
+                        try:
+                            rho = 3000.0
+                            r = float(diameter_m) / 2.0
+                            mass_kg = (4.0 / 3.0) * math.pi * (r ** 3) * rho
+                        except Exception:
+                            mass_kg = 1e9
+                    else:
+                        mass_kg = found.get("mass") or 1e9
+
+        # final cast
+        v_kms = float(v_kms)
+        mass_kg = float(mass_kg)
+        diameter_m = float(diameter_m)
     except Exception:
-        return jsonify({"status": "error", "message": "Invalid numeric input"}), 400
+        return jsonify({"status": "error", "message": "Invalid numeric input or missing asteroid data"}), 400
 
     v_ms = v_kms * 1000.0
     momentum = mass_kg * v_ms

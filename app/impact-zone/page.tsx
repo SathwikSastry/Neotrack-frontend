@@ -1,18 +1,30 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ImpactSummaryCard } from "@/components/impact/impact-summary"
 import { EnergyGraph } from "@/components/impact/energy-graph"
 import { Impact3D } from "@/components/impact/impact-3d"
 import { AIExplain } from "@/components/ai-explain"
 
 export default function ImpactZonePage() {
-  const [velocity, setVelocity] = useState(20)
-  const [mass, setMass] = useState(1e9)
-  const [diameter, setDiameter] = useState(100)
+  const [velocity, setVelocity] = useState<number | null>(20)
+  const [mass, setMass] = useState<number | null>(1e9)
+  const [diameter, setDiameter] = useState<number | null>(100)
   const [target, setTarget] = useState("ground")
   const [loading, setLoading] = useState(false)
   const [detail, setDetail] = useState<any>(null)
+  const [asteroids, setAsteroids] = useState<Array<any>>([])
+  const [selected, setSelected] = useState<string | null>(null)
+  const [listLoading, setListLoading] = useState(true)
+
+  useEffect(() => {
+    const base = (window as any).__NEOTRACK_API_BASE__ || ""
+    setListLoading(true)
+    fetch(`${base}/api/asteroids`).then((r) => r.json()).then((j) => {
+      setAsteroids(j?.list || [])
+      setListLoading(false)
+    }).catch(() => setListLoading(false))
+  }, [])
 
   const submit = async (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -20,7 +32,10 @@ export default function ImpactZonePage() {
     setDetail(null)
     try {
       const base = (window as any).__NEOTRACK_API_BASE__ || ""
-      const res = await fetch(`${base}/api/impact-details`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ velocity_kms: velocity, mass_kg: mass, diameter_m: diameter, target }) })
+      const body: any = { target }
+      if (selected) body.asteroid_name = selected
+      else { body.velocity_kms = velocity; body.mass_kg = mass; body.diameter_m = diameter }
+      const res = await fetch(`${base}/api/impact-details`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
       const j = await res.json()
       if (!res.ok) throw new Error(j?.message || "Server error")
       setDetail(j)
@@ -37,6 +52,33 @@ export default function ImpactZonePage() {
       <p className="mt-3 text-[var(--muted-foreground)] leading-relaxed">Interactive tools to analyze impact energy, expected crater, blast radius, and seismic equivalence.</p>
 
       <form onSubmit={submit} className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-3">
+          <label className="flex flex-col">
+            <span className="text-sm text-[var(--color-muted-foreground)]">Select Asteroid</span>
+            {listLoading ? (
+              <select disabled className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.05)]">
+                <option>Loading...</option>
+              </select>
+            ) : (
+              <select aria-label="Select Asteroid" value={selected ?? ""} onChange={(e) => {
+                const v = e.target.value || null
+                setSelected(v)
+                // populate form with asteroid defaults if available
+                const found = asteroids.find((a: any) => a.name === v)
+                if (found) {
+                  setMass(found.mass || null)
+                  setVelocity(found.velocity || null)
+                  setDiameter(found.diameter || null)
+                }
+              }} className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.05)] text-white" style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.2)" }}>
+                <option value="">-- Select asteroid --</option>
+                {asteroids.map((a: any) => (
+                  <option key={a.name} value={a.name}>{a.name}</option>
+                ))}
+              </select>
+            )}
+          </label>
+        </div>
         <label className="flex flex-col">
           <span className="text-sm text-[var(--color-muted-foreground)]">Velocity (km/s)</span>
           <input aria-label="velocity" type="number" step="0.1" value={velocity} onChange={(e) => setVelocity(Number(e.target.value))} className="p-2 rounded bg-[rgba(255,255,255,0.02)]" />
@@ -50,7 +92,7 @@ export default function ImpactZonePage() {
           <input aria-label="diameter" type="number" step="0.1" value={diameter} onChange={(e) => setDiameter(Number(e.target.value))} className="p-2 rounded bg-[rgba(255,255,255,0.02)]" />
         </label>
 
-        <div className="md:col-span-3 flex items-center gap-3">
+  <div className="md:col-span-3 flex items-center gap-3">
           <label className="inline-flex items-center gap-2">
             <input type="radio" name="target" checked={target === "ground"} onChange={() => setTarget("ground")} /> Ground
           </label>
@@ -61,8 +103,8 @@ export default function ImpactZonePage() {
             <input type="radio" name="target" checked={target === "water"} onChange={() => setTarget("water")} /> Water
           </label>
 
-          <button aria-label="Compute impact details" className="ml-auto px-4 py-2 rounded bg-[var(--color-primary)] text-black" disabled={loading}>
-            {loading ? "Computing..." : "Compute"}
+          <button aria-label="Calculate Impact" className="ml-auto px-4 py-2 rounded bg-[var(--color-primary)] text-black shadow-[0_0_20px_rgba(255,140,0,0.5)]" disabled={loading || !selected}>
+            {loading ? "Calculating..." : "Calculate Impact"}
           </button>
         </div>
       </form>
