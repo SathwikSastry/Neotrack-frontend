@@ -6,6 +6,7 @@ import { EnergyGraph } from "@/components/impact/energy-graph"
 import { Impact3D } from "@/components/impact/impact-3d"
 import { AIExplain } from "@/components/ai-explain"
 import { MetricCards } from "@/components/impact/metric-cards"
+import { AsteroidVisualization } from "@/components/impact/asteroid-visualization"
 
 export default function ImpactZonePage() {
   // remove custom numeric inputs — user will pick from the curated asteroid list
@@ -111,6 +112,9 @@ export default function ImpactZonePage() {
               <p className="mt-2 text-sm text-[var(--color-muted-foreground)]">Select an asteroid to view precomputed info.</p>
             </div>
           )}
+          <div className="mt-4">
+            <AsteroidVisualization asteroid={selectedAsteroid} />
+          </div>
 
           <MetricCards data={detail} />
           <ImpactSummaryCard data={detail} />
