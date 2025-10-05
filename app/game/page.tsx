@@ -50,7 +50,7 @@ export default function GamePage() {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <div style={{ width: "100%", maxWidth: 1200, height: isFullscreen ? '100vh' : 700, borderRadius: 16, overflow: 'hidden', boxShadow: '0 0 40px rgba(255,140,0,0.3)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ width: "100%", maxWidth: 1200, height: isFullscreen ? '100vh' : 750, borderRadius: 16, overflow: 'hidden', boxShadow: '0 0 30px rgba(255,140,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}>
             <iframe
               id="astro-neo-iframe"
               title="Astro NEO Defense"
