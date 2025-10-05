@@ -73,20 +73,39 @@ def load_asteroids():
 
     try:
         with open(ASTEROIDS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            # normalize to ensure minimal keys exist
+            out = []
+            for i, a in enumerate(data[:20]):
+                out.append({
+                    "id": a.get("id") or a.get("neo_reference_id") or str(i+1),
+                    "name": a.get("name") or a.get("label") or f"Asteroid {i+1}",
+                    "mass": a.get("mass") or a.get("mass_kg") or None,
+                    "velocity_kms": a.get("velocity_kms") or a.get("velocity") or None,
+                    "estimated_diameter_km": a.get("estimated_diameter_km") or a.get("diameter_m") or None,
+                    "risk_level": a.get("risk_level") or "unknown",
+                    "is_hazardous": a.get("is_hazardous") or False,
+                    "close_approach_date": a.get("close_approach_date") or a.get("close_approach") or None,
+                    **a,
+                })
+            return out
     except Exception:
         # Fallback: generate simple sample data
         sample = []
-        for i in range(24):
+        for i in range(20):
+            diameter_m = 50 + (i % 7) * 20
+            rho = 3000.0
+            r = diameter_m / 2.0
+            mass_est = (4.0 / 3.0) * math.pi * (r ** 3) * rho
             sample.append({
                 "id": i + 1,
-                "label": f"Asteroid {i+1}",
-                "r": 4.5 + (i % 6) * 0.15 + (i % 3) * 0.05,
-                "theta": (i / 24.0) * 2 * math.pi,
-                "y": (i % 5 - 2) * 0.06,
-                "size": 0.05 + (i % 5) * 0.02,
+                "name": f"Asteroid {i+1}",
+                "mass": mass_est,
                 "velocity_kms": round(5 + (i % 7) * 0.7, 2),
-                "close_approach": False,
+                "estimated_diameter_km": diameter_m / 1000.0,
+                "risk_level": ["low", "medium", "high"][i % 3],
+                "is_hazardous": (i % 7) == 0,
+                "close_approach_date": None,
             })
         return sample
 
@@ -239,9 +258,11 @@ def api_impact_details():
         "impact_energy_j": energy_j,
         "impact_energy_mt": energy_mt,
         "crater_depth_m": crater_depth_m,
+        "crater_diameter_km": max(0.001, (crater_depth_m * 3) / 1000.0),
         "displacement_m": displacement_m,
         "seismic_magnitude_mw": seismic_mag,
         "blast_radius_km": blast_radius_km,
+        "summary_text": f"Estimated impact energy: {energy_j:.3e} J ({energy_mt:.3f} Mt). Approx. crater diameter {max(0.001, (crater_depth_m * 3) / 1000.0):.3f} km.",
     }
     return jsonify(response)
 

@@ -15,7 +15,27 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
   <meta name="twitter:image" content="/astro-neo-defense/thumbnail.png" />
-  <script type="module" crossorigin src="./assets/index-BjCs-ZuT.js"></script>
+    <!-- Normalize the iframe pathname so BrowserRouter-based SPAs served from a subpath don't render their 404 route.
+         This runs before the app bundle boots. It only rewrites the path inside the iframe's history
+         (does NOT navigate the top-level page) and it keeps asset loading relative to this file. -->
+    <script>
+      (function () {
+        try {
+          var p = window.location.pathname || '';
+          // If the app was loaded as index.html inside a subdirectory, push a clean root path
+          // so BrowserRouter will render the app's "/" route instead of a 404 for unknown paths.
+          if (p.indexOf('/astro-neo-defense') === 0 || p.indexOf('index.html') !== -1) {
+            if (p !== '/') {
+              history.replaceState({}, '', '/');
+            }
+          }
+        } catch (e) {
+          // ignore any CSP or history errors
+          console.warn('Astro-NEO path normalization failed', e);
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-BjCs-ZuT.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-BsjBpnC_.css">
   </head>
 
