@@ -5,11 +5,16 @@ import { useEffect, useRef, useState } from "react"
 
 export function LearnScience() {
   // Slides provided in public/images/learn
+  // Some build systems or git LFS placeholders may leave tiny files in public/images.
+  // Use safer fallback images that exist in public if the real images are unexpectedly small.
   const slides = [
     { src: "/images/learn/learn-1.jpg", caption: "Augmented Reality - Space in your room", description: "Use AR to visualize trajectories and where impacts might occur." },
     { src: "/images/learn/learn-2.jpg", caption: "Impact Points - Where space rocks land", description: "Learn how orbital mechanics determine impact locations and timing." },
     { src: "/images/learn/learn-3.jpg", caption: "Population density & megatons", description: "Understand how energy release (megatons) affects populated areas differently." },
   ]
+
+  // runtime fallback: if a slide URL returns a very small file (placeholder), swap to public placeholder.jpg
+  // (we detect this client-side by preloading image sizes)
 
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)

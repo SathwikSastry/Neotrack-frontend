@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import Link from "next/link"
-import Image from "next/image"
 
 type Member = {
   name: string
@@ -75,12 +74,10 @@ export function Contributors() {
             }}
           >
             <div className="flex flex-col items-center text-center">
-              <Image
+              <img
                 src={m.avatar || "/placeholder-user.jpg"}
                 alt={`${m.name} avatar`}
-                width={64}
-                height={64}
-                className="rounded-full object-cover"
+                className="size-16 rounded-full object-cover"
               />
               <div className="mt-3">
                 <p className="font-medium">{m.name}</p>
