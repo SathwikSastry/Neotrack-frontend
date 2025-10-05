@@ -68,10 +68,7 @@ export default function HomePage() {
           </div>
         </div>
 
-      <div aria-hidden="true" className="h-12 md:h-16" />
-
-      {/* Learn the science section inserted after Impact Assessment */}
-      <LearnScience />
+  <div aria-hidden="true" className="h-12 md:h-16" />
 
         {showNasaViewer ? (
           <div
