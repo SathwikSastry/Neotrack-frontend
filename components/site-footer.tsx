@@ -24,7 +24,7 @@ export function SiteFooter() {
         <p className="mt-1">
           Open Source Project —{" "}
           <Link
-            href="https://github.com/NeoTrack-Earth/NeoTrack"
+            href="https://github.com/SathwikSastry/Neotrack-frontend"
             target="_blank"
             rel="noopener noreferrer"
             className="underline decoration-[var(--color-accent)] underline-offset-4"
