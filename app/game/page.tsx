@@ -8,10 +8,10 @@ export default function GamePage() {
   const [isFullscreen, setIsFullscreen] = useState(false)
 
   // recommended hosted URL for the game; if you host the repo, update this to the hosted URL
-  const GAME_URL = process.env.NEXT_PUBLIC_GAME_URL || "https://sameersj008.github.io/astro-neo-defense/"
-  // Configure the allowed origin for postMessage. In production, set NEXT_PUBLIC_GAME_ORIGIN
-  // to the exact origin string (no trailing slash), e.g. https://sameersj008.github.io
-  const GAME_ORIGIN = process.env.NEXT_PUBLIC_GAME_ORIGIN || 'https://sameersj008.github.io'
+  // Serve the embedded game's production files through a Next route at /game/static/index.html
+  const GAME_URL = process.env.NEXT_PUBLIC_GAME_URL || "/game/static/index.html"
+  // When serving locally the origin will be the site's origin.
+  const GAME_ORIGIN = process.env.NEXT_PUBLIC_GAME_ORIGIN || (typeof window !== 'undefined' ? window.location.origin : '')
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
