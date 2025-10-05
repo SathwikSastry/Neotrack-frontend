@@ -15,6 +15,7 @@ export default function ImpactZonePage() {
   const [selected, setSelected] = useState<string | null>(null)
   const [selectedAsteroid, setSelectedAsteroid] = useState<any | null>(null)
   const [listLoading, setListLoading] = useState(true)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   useEffect(() => {
     const base = (window as any).__NEOTRACK_API_BASE__ || ""
@@ -72,7 +73,8 @@ export default function ImpactZonePage() {
                 setSelected(v)
                 const found = asteroids.find((a: any) => a.name === v) || null
                 setSelectedAsteroid(found)
-              }} className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.05)] text-white" style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.2)" }}>
+              }} className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.05)] text-white" style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.2)" }}
+              onFocus={() => setDropdownOpen(true)} onBlur={() => setDropdownOpen(false)} size={dropdownOpen ? asteroids.length : 1}>
                 <option value="">-- Select asteroid --</option>
                 {asteroids.map((a: any) => (
                   <option key={a.name} value={a.name}>{a.name}</option>
