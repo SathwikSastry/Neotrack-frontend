@@ -25,6 +25,7 @@ interface ImpactDetails {
   summary_text?: string;
 }
 
+export default function ImpactZonePage() {
   const [asteroids, setAsteroids] = useState<Asteroid[]>([]);
   const [selectedAsteroid, setSelectedAsteroid] = useState<Asteroid | null>(null);
   const [impactDetails, setImpactDetails] = useState<ImpactDetails | null>(null);
