@@ -35,7 +35,6 @@ export default function ImpactZonePage() {
   const [shareText, setShareText] = useState("");
 
   useEffect(() => {
-    // fetch up to 20 asteroids
     fetch('/api/asteroids?limit=20')
       .then((r) => r.json())
       .then((j) => setAsteroids(j?.list || j || []))
