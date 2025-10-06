@@ -37,7 +37,7 @@ export default function HomePage() {
               <div>
                 <h2 id="ask-space-ai" className="font-[var(--font-orbitron)] text-2xl md:text-3xl">Ask the Space AI</h2>
                 <p className="mt-2 max-w-2xl text-[var(--color-muted-foreground)]">
-                  Explore the unknown. Ask about asteroids, impacts, or space technology — powered by Groq Intelligence.
+                  Explore the unknown. Ask about asteroids, impacts, space missions, and planetary defense.
                 </p>
               </div>
               <Link href="/space-ai" className="inline-flex">

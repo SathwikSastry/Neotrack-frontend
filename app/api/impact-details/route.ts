@@ -1,34 +1,36 @@
-import { NextResponse } from 'next/server'
-
 export async function POST(request: Request) {
   try {
-    const { name } = await request.json()
-    
-    if (!name) {
-      return NextResponse.json({ error: 'Asteroid name is required' }, { status: 400 })
+    const payload = await request.json();
+    const backendBase = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "http://localhost:5000";
+    const res = await fetch(`${backendBase}/api/impact-details`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        asteroid_name: payload?.asteroid_name || payload?.name,
+        target: payload?.target || 'ground',
+        velocity_kms: payload?.velocity_kms,
+        mass_kg: payload?.mass_kg,
+        diameter_m: payload?.diameter_m,
+      }),
+      cache: 'no-store',
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data) {
+      return new Response(JSON.stringify({ status: 'error', message: 'Backend unavailable' }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // Mock impact calculation based on asteroid name
-    const mockImpactData = {
-      impact_energy: Math.random() * 1e15 + 1e12, // Random energy in Joules
-      impact_energy_mt: Math.random() * 100 + 1, // Random energy in Megatons
-      crater_depth_m: Math.random() * 500 + 50,
-      blast_radius_km: Math.random() * 50 + 5,
-      seismic_magnitude_mw: Math.random() * 3 + 4,
-      displacement_m: Math.random() * 100 + 10,
-      summary_text: `Asteroid ${name} would create a significant impact with ${Math.random() * 100 + 1} megatons of energy.`,
-      energy_graph_data: [
-        { name: 'Impact', value: Math.random() * 1e15 + 1e12 },
-        { name: 'Hiroshima', value: 6.3e13 }
-      ],
-      impact_point: {
-        lat: Math.random() * 180 - 90,
-        lon: Math.random() * 360 - 180
-      }
-    }
-
-    return NextResponse.json(mockImpactData)
+    return new Response(JSON.stringify(data), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    return new Response(JSON.stringify({ status: 'error', message: 'Invalid request' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
