@@ -92,7 +92,7 @@ def load_asteroids():
                 })
             return out
     except Exception:
-        # Fallback: generate simple sample data
+        # Fallback: generate simple sample data #simple
         sample = []
         for i in range(20):
             diameter_m = 50 + (i % 7) * 20
