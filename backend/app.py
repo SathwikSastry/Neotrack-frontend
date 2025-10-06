@@ -38,7 +38,7 @@ ASTEROIDS_FILE = os.path.join(DATA_DIR, "asteroids.json")
 
 def load_asteroids():
     # Priority: if NASA_API_KEY is set, attempt to fetch recent NEO browse data from NASA API.
-    nasa_key = os.environ.get("1mbobnm9XAdcGyxusiWT1O9IlARYWcXDej7Xv0Lb")
+    nasa_key = os.environ.get("NASA_API_KEY")
     if nasa_key:
         try:
             import requests
