@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import math
 import json
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -23,7 +24,8 @@ def set_security_headers(response):
         "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https:",
-        "connect-src 'self' https://api.groq.ai https://api.nasa.gov",
+        # Allow Groq's OpenAI-compatible endpoint and NASA
+        "connect-src 'self' https://api.groq.com https://api.groq.ai https://api.nasa.gov",
     ]
     response.headers.setdefault('Content-Security-Policy', "; ".join(csp_parts))
     response.headers.setdefault('X-Content-Type-Options', 'nosniff')
@@ -184,6 +186,72 @@ def api_impact():
     }
     return jsonify(response)
 
+
+
+@app.route("/api/ask-ai", methods=["POST"])
+def api_ask_ai():
+    """Proxy chat endpoint backed by Groq (llama-3.1-8b-instant).
+
+    Request JSON: { query: string, language?: 'en'|'hi'|'es'|'fr' }
+    Response JSON: { response: string }
+    """
+    payload = request.get_json(force=True) or {}
+    query = str(payload.get("query", "")).strip()
+    language = (payload.get("language") or "en").lower()
+
+    # Use provided key or default per spec
+    groq_api_key = os.getenv(
+        "GROQ_API_KEY",
+        "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",
+    )
+
+    headers = {
+        "Authorization": f"Bearer {groq_api_key}",
+        "Content-Type": "application/json",
+    }
+
+    def groq_chat(prompt: str) -> str:
+        body = {
+            "model": "llama-3.1-8b-instant",
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        try:
+            res = requests.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers=headers,
+                json=body,
+                timeout=30,
+            )
+            data = res.json()
+            return (
+                ((data.get("choices") or [{}])[0].get("message") or {}).get("content")
+                or ""
+            ).strip()
+        except Exception as e:
+            return ""
+
+    # Translate to English if needed for understanding
+    internal_query = query
+    if language != "en" and query:
+        internal_query = groq_chat(
+            f"Translate this to English for understanding: {query}"
+        ) or query
+
+    # Compose assistant instruction
+    system_prompt = (
+        "You are Neotrack AI, a helpful space technology assistant. Respond concisely and clearly."
+    )
+    answer = groq_chat(f"{system_prompt} {internal_query}")
+
+    # Translate back to target language if needed
+    if language != "en" and answer:
+        translated = groq_chat(
+            f"Translate this answer into {language}: {answer}"
+        )
+        if translated:
+            answer = translated
+
+    return jsonify({"response": answer or "Sorry, I couldn't generate a response."})
 
 
 @app.route("/api/impact-details", methods=["POST"])

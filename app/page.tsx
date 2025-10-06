@@ -6,7 +6,6 @@ import Link from "next/link"
 import { Contributors } from "@/components/contributors"
 import { useEffect, useState } from "react" // for modal/overlay control
 import { AIExplain } from "@/components/ai-explain"
-import { LearnScience } from "@/components/learn-science"
 
 export default function HomePage() {
   const [showNasaViewer, setShowNasaViewer] = useState(false)
@@ -30,9 +29,30 @@ export default function HomePage() {
       </section>
       <div aria-hidden="true" className="h-12 md:h-16" />
 
-      {/* Learn the science section inserted after NASA Eyes */}
-      <LearnScience />
-
+      {/* Ask the Space AI — replaces Learn section, appears after NASA Eyes */}
+      <section className="relative" aria-labelledby="ask-space-ai">
+        <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
+          <div className="rounded-2xl border border-[var(--color-border)]/70 bg-[color:rgba(255,255,255,0.04)]/60 backdrop-blur-xl p-6 md:p-8 shadow-[0_0_40px_rgba(255,140,0,0.18)]">
+            <div className="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 id="ask-space-ai" className="font-[var(--font-orbitron)] text-2xl md:text-3xl">Ask the Space AI</h2>
+                <p className="mt-2 max-w-2xl text-[var(--color-muted-foreground)]">
+                  Explore the unknown. Ask about asteroids, impacts, or space technology — powered by Groq Intelligence.
+                </p>
+              </div>
+              <Link href="/space-ai" className="inline-flex">
+                <Button
+                  aria-label="Launch Space AI"
+                  className="rounded-xl bg-gradient-to-r from-[#FF8C00] to-[#FF4500] text-white px-5 py-3 shadow-[0_0_24px_rgba(255,140,0,0.35)]"
+                >
+                  Launch Space AI 🚀
+                </Button>
+              </Link>
+            </div>
+            <div className="pointer-events-none mt-6 h-20 w-full rounded-xl bg-[radial-gradient(ellipse_at_top,rgba(255,140,0,0.08),transparent_60%),radial-gradient(ellipse_at_bottom_left,rgba(0,191,255,0.08),transparent_55%)] animate-pulse [animation-duration:6s]" />
+          </div>
+        </div>
+      </section>
 
       <div aria-hidden="true" className="h-6 md:h-8 lg:h-12" />
 
