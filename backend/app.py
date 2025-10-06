@@ -199,11 +199,13 @@ def api_ask_ai():
     query = str(payload.get("query", "")).strip()
     language = (payload.get("language") or "en").lower()
 
-    # Use provided key or default per spec
-    groq_api_key = os.getenv(
-        "GROQ_API_KEY",
-        "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",
-    )
+    # Use provided key; do not hardcode defaults to avoid leaking secrets
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    if not groq_api_key:
+        return jsonify({
+            "response": "Space AI is temporarily unavailable: missing GROQ_API_KEY on the server.",
+            "error": "missing_groq_key"
+        }), 503
 
     headers = {
         "Authorization": f"Bearer {groq_api_key}",
