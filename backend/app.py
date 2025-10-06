@@ -38,7 +38,7 @@ ASTEROIDS_FILE = os.path.join(DATA_DIR, "asteroids.json")
 
 def load_asteroids():
     # Priority: if NASA_API_KEY is set, attempt to fetch recent NEO browse data from NASA API.
-    nasa_key = os.environ.get("NASA_API_KEY")
+    nasa_key = os.environ.get("1mbobnm9XAdcGyxusiWT1O9IlARYWcXDej7Xv0Lb")
     if nasa_key:
         try:
             import requests
@@ -201,11 +201,6 @@ def api_ask_ai():
 
     # Use provided key; do not hardcode defaults to avoid leaking secrets
     groq_api_key = os.getenv("GROQ_API_KEY")
-    if not groq_api_key:
-        return jsonify({
-            "response": "Space AI is temporarily unavailable: missing GROQ_API_KEY on the server.",
-            "error": "missing_groq_key"
-        }), 503
 
     headers = {
         "Authorization": f"Bearer {groq_api_key}",
@@ -241,8 +236,25 @@ def api_ask_ai():
 
     # Compose assistant instruction
     system_prompt = (
-        "You are Neotrack AI, a helpful space technology assistant. Respond concisely and clearly."
+        "You are Neotrack AI, the on-site assistant for NeoTrack.Earth. "
+        "Explain asteroid science, impact energy, planetary defense, and space missions in clear, engaging, and accurate terms. "
+        "Be concise, cite relevant concepts (e.g., kinetic energy, momentum, crater scaling) without overloading jargon, and offer next-step guidance when useful."
     )
+    # If no key is configured, provide a graceful offline fallback
+    if not groq_api_key:
+        fallback = "I’m here and listening. I can share general insights: ask about asteroids, impact energy, crater size, or notable missions like DART."
+        basic_map = {
+            "dart": "DART was a planetary defense test that intentionally impacted the moonlet Dimorphos to measure how much its orbit changed.",
+            "impact": "Impact energy scales with mass and the square of velocity (E = 1/2 m v^2). Larger, faster objects release more energy and can form larger craters.",
+            "crater": "Crater size depends on impact energy and target surface; simple scaling suggests diameter grows sublinearly with energy.",
+            "asteroid": "Asteroids are rocky bodies orbiting the Sun; some are near-Earth objects (NEOs) that occasionally make close approaches.",
+        }
+        lower_q = (internal_query or "").lower()
+        for k, v in basic_map.items():
+            if k in lower_q:
+                return jsonify({"response": v})
+        return jsonify({"response": fallback})
+
     answer = groq_chat(f"{system_prompt} {internal_query}")
 
     # Translate back to target language if needed

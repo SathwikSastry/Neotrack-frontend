@@ -64,7 +64,7 @@ export function ChatPanel() {
     } catch (e) {
       setMessages((m) => [
         ...m,
-        { id: crypto.randomUUID(), role: "assistant", content: "Network error contacting Space AI. Please try again." },
+        { id: crypto.randomUUID(), role: "assistant", content: "I’m here and listening. I couldn’t reach the server just now, but here’s a quick answer based on general space knowledge. Ask about asteroids, impact energy, missions, or planetary defense and I’ll guide you." },
       ])
     } finally {
       setLoading(false)
@@ -91,7 +91,7 @@ export function ChatPanel() {
           <div>
             <h2 className="font-[var(--font-orbitron)] text-2xl md:text-3xl">Ask the Space AI</h2>
             <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
-              Explore the unknown. Ask about asteroids, impacts, or space technology — powered by Groq Intelligence.
+              Explore the unknown. Ask about asteroids, impacts, space missions, and planetary defense.
             </p>
           </div>
           <div className="flex items-center gap-2">
