@@ -6,10 +6,16 @@ import Link from "next/link"
 export default function GamePage() {
   const [loaded, setLoaded] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [gameUrl, setGameUrl] = useState<string>("")
+  const [errorText, setErrorText] = useState<string>("")
 
-  // recommended hosted URL for the game; if you host the repo, update this to the hosted URL
-  // Serve the embedded game's production files through a Next route at /game/static/index.html
-  const GAME_URL = process.env.NEXT_PUBLIC_GAME_URL || "/astro-neo-defense/index.html"
+  // Candidate URLs in order of preference
+  const CANDIDATE_URLS = [
+    "/game/static/index.html",             // served from app route (dist)
+    "/astro-neo-defense/index.html",       // served from public folder
+    process.env.NEXT_PUBLIC_GAME_URL || "", // explicit override
+  ].filter(Boolean)
+
   // When serving locally the origin will be the site's origin.
   const GAME_ORIGIN = process.env.NEXT_PUBLIC_GAME_ORIGIN || (typeof window !== 'undefined' ? window.location.origin : '')
 
@@ -19,6 +25,27 @@ export default function GamePage() {
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
+  }, [])
+
+  useEffect(() => {
+    // Pick the first candidate that returns 200
+    let cancelled = false
+    ;(async () => {
+      for (const url of CANDIDATE_URLS) {
+        try {
+          const res = await fetch(url, { method: 'HEAD', cache: 'no-cache' })
+          if (!cancelled && res.ok) {
+            setGameUrl(url)
+            setErrorText("")
+            return
+          }
+        } catch (_) {}
+      }
+      if (!cancelled) {
+        setErrorText("Game files not found (404). Ensure /game/static or /astro-neo-defense is deployed.")
+      }
+    })()
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
@@ -45,16 +72,22 @@ export default function GamePage() {
             <div role="status" aria-live="polite" className="flex flex-col items-center gap-3">
               <div className="h-12 w-12 rounded-full border-4 border-t-[var(--color-accent)] animate-spin" />
               <div className="text-sm font-[var(--font-display)] text-[var(--color-accent)]">Preparing Space Defense Simulation...</div>
+              {errorText ? (
+                <div className="max-w-xl text-center text-red-400 text-xs">
+                  {errorText}
+                </div>
+              ) : null}
             </div>
           )}
         </div>
 
         <div className="mt-8 flex justify-center">
           <div style={{ width: "100%", maxWidth: 1200, height: isFullscreen ? '100vh' : 750, borderRadius: 16, overflow: 'hidden', boxShadow: '0 0 30px rgba(255,140,0,0.4)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            {gameUrl && (
             <iframe
               id="astro-neo-iframe"
               title="Astro NEO Defense"
-              src={GAME_URL}
+              src={gameUrl}
               sandbox="allow-scripts allow-same-origin allow-pointer-lock"
               referrerPolicy="no-referrer"
               loading="lazy"
@@ -62,16 +95,16 @@ export default function GamePage() {
               style={{ width: '100%', height: '100%', border: 'none', borderRadius: 16, background: 'transparent' }}
               onLoad={() => setLoaded(true)}
               onError={() => {
-                // If iframe fails to load, show a console hint; the server route may be misconfigured or assets missing.
-                console.error('Failed to load embedded game at', GAME_URL)
+                console.error('Failed to load embedded game at', gameUrl)
                 setLoaded(false)
+                setErrorText(`Failed to load ${gameUrl}. Check that its assets are deployed and accessible.`)
               }}
-            />
+            />)}
           </div>
         </div>
 
         <div className="mt-6 flex justify-center gap-3">
-          <button onClick={() => setIsFullscreen((s) => !s)} className="px-4 py-2 rounded bg-[var(--color-primary)] text-black">{isFullscreen ? 'Exit Fullscreen' : 'Toggle Fullscreen'}</button>
+          <button onClick={() => setIsFullscreen((s: boolean) => !s)} className="px-4 py-2 rounded bg-[var(--color-primary)] text-black">{isFullscreen ? 'Exit Fullscreen' : 'Toggle Fullscreen'}</button>
           <button
             onClick={() => {
               const f = document.getElementById('astro-neo-iframe') as HTMLIFrameElement | null
