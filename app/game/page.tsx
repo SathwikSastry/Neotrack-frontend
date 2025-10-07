@@ -11,8 +11,8 @@ export default function GamePage() {
 
   // Candidate URLs in order of preference
   const CANDIDATE_URLS = [
+    "/astro-neo-defense/index.html",       // prefer public folder for reliability
     "/game/static/index.html",             // served from app route (dist)
-    "/astro-neo-defense/index.html",       // served from public folder
     process.env.NEXT_PUBLIC_GAME_URL || "", // explicit override
   ].filter(Boolean)
 
@@ -33,7 +33,7 @@ export default function GamePage() {
     ;(async () => {
       for (const url of CANDIDATE_URLS) {
         try {
-          const res = await fetch(url, { method: 'HEAD', cache: 'no-cache' })
+          const res = await fetch(url, { method: 'GET', cache: 'no-store' })
           if (!cancelled && res.ok) {
             setGameUrl(url)
             setErrorText("")
