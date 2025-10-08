@@ -82,12 +82,30 @@ export default function ImpactZonePage() {
               aria-label="Select Asteroid"
               value={selectedAsteroid?.name ?? ""}
               onChange={handleAsteroidChange}
-              className="mt-2 w-full rounded p-3 bg-[rgba(255,255,255,0.04)] text-white"
-              style={{ fontFamily: "Orbitron, sans-serif", border: "1px solid rgba(255,255,255,0.12)" }}
+              className="mt-2 w-full rounded-lg p-4 bg-[rgba(20,20,40,0.8)] text-[#f0f0ff] font-medium cursor-pointer appearance-none"
+              style={{ 
+                fontFamily: "Orbitron, sans-serif", 
+                border: "1px solid rgba(100,149,237,0.6)",
+                boxShadow: "0 0 12px rgba(100,149,237,0.35)",
+                fontSize: "1.05rem",
+                letterSpacing: "0.03em",
+                backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236495ED%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 1rem top 50%",
+                backgroundSize: "0.8rem auto",
+                paddingRight: "2.5rem",
+                transition: "all 0.2s ease-in-out"
+              }}
             >
-              <option value="">-- Select asteroid --</option>
+              <option value="" style={{ backgroundColor: "#1a1a2e", color: "#f0f0ff", padding: "12px", fontSize: "1rem" }}>-- Select asteroid --</option>
               {asteroids.map((a) => (
-                <option key={String(a.id ?? a.name)} value={a.name}>{a.name}</option>
+                <option 
+                  key={String(a.id ?? a.name)} 
+                  value={a.name}
+                  style={{ backgroundColor: "#1a1a2e", color: "#f0f0ff", padding: "12px", fontSize: "1rem" }}
+                >
+                  {a.name}
+                </option>
               ))}
             </select>
           </label>
