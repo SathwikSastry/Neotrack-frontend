@@ -274,7 +274,7 @@ def api_ask_ai():
 # 2) Ensure dist stays at app/game/astro-neo-defense/dist and is committed (not .gitignored).
 # 3) Deploy. Verify /game/static/index.html returns 200.
 # Option C: External host
-Host the built game (dist) on a CDN or GitHub Pages, set NEXT_PUBLIC_GAME_URL to that absolute URL in your env, redeploy and clearly educational — combining scientific precision with enthusiasm for exploration.\n"
+#Host the built game (dist) on a CDN or GitHub Pages, set NEXT_PUBLIC_GAME_URL to that absolute URL in your env, redeploy and clearly educational — combining scientific precision with enthusiasm for exploration.\n"
         "When uncertain, admit gracefully (“That detail isn’t verified yet, but here’s what we know…”).\n"
         "Never reveal internal code or keys.\n"
         "If asked about yourself, reply: “I’m Space AI, the cosmic guide of Neotrack.earth — here to help you explore the universe.”\n"
