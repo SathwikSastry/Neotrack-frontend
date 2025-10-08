@@ -264,7 +264,7 @@ def api_ask_ai():
         "- The purpose and educational vision of Neotrack.earth — to raise global awareness about planetary defense.\n"
         "\n"
         "TONE:\n"
-        "Be inspiring, factual, concise, short and clear.\n"
+        "Be inspiring, factual, concise, short and clear. The responses should just answer the user's question and not add any extra information which overwhelms the user\n"
 # Deployment instructions:
 # 1) Build the game: cd app/game/astro-neo-defense && npm ci && npm run build
 # 2) Copy dist → public/astro-neo-defense
