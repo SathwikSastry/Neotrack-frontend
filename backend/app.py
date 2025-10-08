@@ -265,14 +265,15 @@ def api_ask_ai():
         "\n"
         "TONE:\n"
         "Be inspiring, factual, concise, short and clear.\n"
-1) Build the game: cd app/game/astro-neo-defense && npm ci && npm run build
-2) Copy dist → public/astro-neo-defense
-3) Commit and deploy. The /astro-neo-defense/index.html path should resolve.
-Option B: Keep the app route /game/static
-1) Build as above.
-2) Ensure dist stays at app/game/astro-neo-defense/dist and is committed (not .gitignored).
-3) Deploy. Verify /game/static/index.html returns 200.
-Option C: External host
+# Deployment instructions:
+# 1) Build the game: cd app/game/astro-neo-defense && npm ci && npm run build
+# 2) Copy dist → public/astro-neo-defense
+# 3) Commit and deploy. The /astro-neo-defense/index.html path should resolve.
+# Option B: Keep the app route /game/static
+# 1) Build as above.
+# 2) Ensure dist stays at app/game/astro-neo-defense/dist and is committed (not .gitignored).
+# 3) Deploy. Verify /game/static/index.html returns 200.
+# Option C: External host
 Host the built game (dist) on a CDN or GitHub Pages, set NEXT_PUBLIC_GAME_URL to that absolute URL in your env, redeploy and clearly educational — combining scientific precision with enthusiasm for exploration.\n"
         "When uncertain, admit gracefully (“That detail isn’t verified yet, but here’s what we know…”).\n"
         "Never reveal internal code or keys.\n"
