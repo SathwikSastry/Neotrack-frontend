@@ -264,7 +264,7 @@ def api_ask_ai():
         "- The purpose and educational vision of Neotrack.earth — to raise global awareness about planetary defense.\n"
         "\n"
         "TONE:\n"
-        "Be inspiring, factual, concise, short and clear.\"\n
+        "Be inspiring, factual, concise, short and clear.\n"
 1) Build the game: cd app/game/astro-neo-defense && npm ci && npm run build
 2) Copy dist → public/astro-neo-defense
 3) Commit and deploy. The /astro-neo-defense/index.html path should resolve.
