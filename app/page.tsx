@@ -182,32 +182,34 @@ export default function HomePage() {
             Test your reflexes in an asteroid field! Survive as long as you can while dodging meteors and debris.
           </p>
 
-          <Link
-            href="/game"
-            className="mt-6 block rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] p-4 backdrop-blur-md transition hover:brightness-110"
-            aria-label="Navigate to the space game"
-          >
+          <div className="mt-6 block rounded-xl border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.04)] p-4 backdrop-blur-md transition hover:brightness-110">
             <div className="grid items-center gap-4 md:grid-cols-[320px_1fr]">
               <img src="/placeholder.jpg" alt="Space game preview" className="rounded-md" />
               <div className="flex flex-col gap-3">
                 <p className="text-sm text-[var(--color-muted-foreground)]">
-                  Hover for glow. The full game loads on the dedicated page.
+                  Hover for glow. Click the button below to launch the game in a new tab.
                 </p>
-                <Button
-                  style={{
-                    background: "linear-gradient(90deg, #FF8C00, #8A2BE2)",
-                    color: "#FFFFFF",
-                    padding: "14px 28px",
-                    borderRadius: "10px",
-                    boxShadow: "0 0 20px rgba(255,140,0,0.6)",
-                  }}
-                  className="w-fit"
+                <a 
+                  href="https://neotrack-game-dart.vercel.app/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
                 >
-                  Play Now 🎮
-                </Button>
+                  <Button
+                    style={{
+                      background: "linear-gradient(90deg, #FF8C00, #8A2BE2)",
+                      color: "#FFFFFF",
+                      padding: "14px 28px",
+                      borderRadius: "10px",
+                      boxShadow: "0 0 20px rgba(255,140,0,0.6)",
+                    }}
+                    className="w-fit"
+                  >
+                    Launch Game 🎮
+                  </Button>
+                </a>
               </div>
             </div>
-          </Link>
+          </div>
         </div>
       </section>
 
