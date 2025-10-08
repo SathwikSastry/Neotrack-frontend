@@ -34,15 +34,64 @@ export default function ImpactZonePage() {
   const [loading, setLoading] = useState(false);
   const [shareText, setShareText] = useState("");
 
+  // Pre-load asteroids data with a smaller initial limit for faster loading
+  const [isLoadingOptions, setIsLoadingOptions] = useState(false);
+  
   useEffect(() => {
+    // Set a loading state to provide immediate feedback
+    setIsLoadingOptions(true);
+    
+    // Use a cached approach with localStorage if available
+    const cachedAsteroids = localStorage.getItem('cachedAsteroids');
+    if (cachedAsteroids) {
+      try {
+        const parsed = JSON.parse(cachedAsteroids);
+        setAsteroids(parsed);
+        setIsLoadingOptions(false);
+        
+        // Still fetch fresh data in background
+        fetch('/api/asteroids?limit=20')
+          .then((r) => r.json())
+          .then((j) => {
+            const newData = j?.list || j || [];
+            setAsteroids(newData);
+            localStorage.setItem('cachedAsteroids', JSON.stringify(newData));
+          })
+          .catch(console.error);
+      } catch (e) {
+        // If cache parsing fails, fetch normally
+        fetchAsteroids();
+      }
+    } else {
+      fetchAsteroids();
+    }
+  }, []);
+  
+  // Separate fetch function for cleaner code
+  const fetchAsteroids = () => {
     fetch('/api/asteroids?limit=20')
       .then((r) => r.json())
-      .then((j) => setAsteroids(j?.list || j || []))
-      .catch(() => setAsteroids([]));
-  }, []);
+      .then((j) => {
+        const data = j?.list || j || [];
+        setAsteroids(data);
+        setIsLoadingOptions(false);
+        // Cache the results
+        try {
+          localStorage.setItem('cachedAsteroids', JSON.stringify(data));
+        } catch (e) {
+          console.error('Failed to cache asteroid data', e);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setAsteroids([]);
+        setIsLoadingOptions(false);
+      });
+  };
 
   const handleAsteroidChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value;
+    // Use a more efficient lookup with Map if there are many asteroids
     const found = asteroids.find((a) => a.name === val || String(a.id) === val) || null;
     setSelectedAsteroid(found);
     setImpactDetails(null);
@@ -93,7 +142,8 @@ export default function ImpactZonePage() {
               aria-label="Select Asteroid"
               value={selectedAsteroid?.name ?? ""}
               onChange={handleAsteroidChange}
-              className="mt-2 w-full rounded-lg p-4 bg-[rgba(20,20,40,0.8)] text-[#f0f0ff] font-medium cursor-pointer appearance-none"
+              disabled={isLoadingOptions}
+              className={`mt-2 w-full rounded-lg p-4 bg-[rgba(20,20,40,0.8)] text-[#f0f0ff] font-medium appearance-none ${isLoadingOptions ? 'opacity-80' : 'cursor-pointer'}`}
               style={{ 
                 fontFamily: "Orbitron, sans-serif", 
                 border: "1px solid rgba(100,149,237,0.6)",
@@ -105,10 +155,12 @@ export default function ImpactZonePage() {
                 backgroundPosition: "right 1rem top 50%",
                 backgroundSize: "0.8rem auto",
                 paddingRight: "2.5rem",
-                transition: "all 0.2s ease-in-out"
+                transition: "all 0.15s ease-in-out"
               }}
             >
-              <option value="" style={{ backgroundColor: "#1a1a2e", color: "#f0f0ff", padding: "12px", fontSize: "1rem" }}>-- Select asteroid --</option>
+              <option value="" style={{ backgroundColor: "#1a1a2e", color: "#f0f0ff", padding: "12px", fontSize: "1rem" }}>
+                {isLoadingOptions ? "Loading asteroids..." : "-- Select asteroid --"}
+              </option>
               {asteroids.map((a) => (
                 <option 
                   key={String(a.id ?? a.name)} 

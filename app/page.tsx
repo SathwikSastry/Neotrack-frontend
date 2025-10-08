@@ -28,6 +28,20 @@ export default function HomePage() {
         <Hero />
       </section>
       <div aria-hidden="true" className="h-12 md:h-16" />
+      
+      {/* Educational Link Section */}
+      <section className="text-center py-4 mx-auto w-full max-w-6xl px-4 md:px-6">
+        <a 
+          href="https://drive.google.com/file/d/1B5QGTMOQnzrWLYXhXrgzIsx42FhiCBHe/view?usp=sharing" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[#6495ED] hover:text-[#87CEFA] transition-colors duration-200 font-medium text-lg"
+          style={{ fontFamily: "var(--font-orbitron)", letterSpacing: "0.03em" }}
+        >
+          Educate yourself with basics
+        </a>
+      </section>
+      <div aria-hidden="true" className="h-4" />
 
       {/* Ask the Space AI — replaces Learn section, appears after NASA Eyes */}
       <section className="relative" aria-labelledby="ask-space-ai">
