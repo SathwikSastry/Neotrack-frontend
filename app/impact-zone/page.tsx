@@ -73,6 +73,17 @@ export default function ImpactZonePage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-12 md:px-6">
       <h1 className="font-[var(--font-display)] text-3xl md:text-4xl">Impact Assessment Dashboard</h1>
       <p className="mt-3 text-[var(--muted-foreground)] leading-relaxed">Interactive tools to analyze impact energy, expected crater, blast radius, and seismic equivalence.</p>
+      <div className="mt-2 mb-4 text-center">
+        <a 
+          href="https://drive.google.com/file/d/1B5QGTMOQnzrWLYXhXrgzIsx42FhiCBHe/view?usp=sharing" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[#6495ED] hover:text-[#87CEFA] transition-colors duration-200 font-medium"
+          style={{ fontFamily: "Orbitron, sans-serif", letterSpacing: "0.03em" }}
+        >
+          Educate yourself with basics
+        </a>
+      </div>
 
       <form onSubmit={handleCalculateImpact} className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-3">
