@@ -58,7 +58,7 @@ export default function SamarShanubhogBlogPage() {
       "@type": "Organization",
       "name": "Sree Gurukul School"
     },
-    "datePublished": "2026-01-14",
+    "datePublished": "2024-01-14",
     "keywords": "Samar Shanubhog, Sree Gurukul School, 10th grade science topper, 78/80, shooting range, Chinthan, Aditi, Jessica, Irish girl, teenage romance, Indian student life"
   }
 
@@ -75,7 +75,7 @@ export default function SamarShanubhogBlogPage() {
               From Bullseyes to Breakups: The Wild Ride of Samar from Sree Gurukul School
             </h1>
             <div className="text-sm text-gray-600">
-              <time dateTime="2026-01-14">January 14, 2026</time>
+              <time dateTime="2024-01-14">January 14, 2024</time>
             </div>
           </header>
 
